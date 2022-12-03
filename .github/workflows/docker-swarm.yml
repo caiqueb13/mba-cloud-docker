@@ -1,0 +1,65 @@
+name: "Docker Deploy WordPress to EC2"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_AWS }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_KEY_AWS }}
+  AWS_SESSION_TOKEN: ${{ secrets.SESSION_KEY_AWS }}
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        lfs: 'true'
+
+    - name: Docker Login
+      uses: docker/login-action@v2.1.0
+      with:
+        username: ${{secrets.DOCKERHUB_USER}}
+        password: ${{secrets.DOCKERHUB_PWD}}
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v3.2.0
+      with:
+        file: Dockerfile
+        context: .
+        push: true
+        tags: |
+          caiqueb13/apache2:php-latest
+          caiqueb13/apache2:${{github.run_number}}
+      
+  CD:
+    name: 'Stack Deploy'
+    needs: [CI]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: "Configure AWS Credentials"
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+        aws-region: us-east-1
+        
+    - name: Docker Swarm Deploy App
+      run: |
+        aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --instance-ids "${{ secrets.AWS_INSTANCE_ID }}" \
+            --parameters '{"commands":["#!/bin/bash","docker stack deploy -c docker-compose.yml"]}'
