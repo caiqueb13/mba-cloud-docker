@@ -33,7 +33,7 @@ services:
             WORDPRESS_DB_NAME: zika
 
     apache:
-        image: apache2
+        image: caiqueb13/apache2:php-latest
         volumes:
             - ./apache/site.conf:/etc/apache2/sites-available/000-default.conf
             - ./apache/apache2.conf:/etc/apache2/apache2.conf
