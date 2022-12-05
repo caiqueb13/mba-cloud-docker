@@ -36,30 +36,30 @@ jobs:
           caiqueb13/apache2:php-latest
           caiqueb13/apache2:${{github.run_number}}
       
-  CD:
-    name: 'Stack Deploy'
-    needs: [CI]
-    runs-on: ubuntu-latest
+  #CD:
+  #  name: 'Stack Deploy'
+  #  needs: [CI]
+  #  runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
+#    defaults:
+#      run:
+#        shell: bash
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    
-    - name: "Configure AWS Credentials"
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
-        aws-region: us-east-1
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v2
+   
+#    - name: "Configure AWS Credentials"
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+#        aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+#        aws-region: us-east-1
         
-    - name: Docker Swarm Deploy App
-      run: |
-        aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --instance-ids "${{ secrets.AWS_INSTANCE_ID }}" \
-            --parameters '{"commands":["#!/bin/bash","docker stack deploy -c docker-compose.yml"]}'
+#    - name: Docker Swarm Deploy App
+#      run: |
+#        aws ssm send-command \
+#            --document-name "AWS-RunShellScript" \
+#            --instance-ids "${{ secrets.AWS_INSTANCE_ID }}" \
+#            --parameters '{"commands":["#!/bin/bash","docker stack deploy -c docker-compose.yml"]}'
