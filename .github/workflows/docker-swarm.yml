@@ -2,14 +2,15 @@ name: "Docker Deploy WordPress to EC2"
 
 on:
   push:
-    branches:
-      - main
+  workflow_dispatch:
+#    branches:
+#      - main
   pull_request:
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_AWS }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_KEY_AWS }}
-  AWS_SESSION_TOKEN: ${{ secrets.SESSION_KEY_AWS }}
+#env:
+#  AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_AWS }}
+#  AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_KEY_AWS }}
+#  AWS_SESSION_TOKEN: ${{ secrets.SESSION_KEY_AWS }}
 
 jobs:
   CI:
@@ -33,8 +34,8 @@ jobs:
         context: .
         push: true
         tags: |
-          caiqueb13/apache2:php-latest
-          caiqueb13/apache2:${{github.run_number}}
+          seu-user/nome-da-imagem:sua-tag
+          seu-user/nome-da-imagem:${{github.run_number}}
       
   #CD:
   #  name: 'Stack Deploy'
