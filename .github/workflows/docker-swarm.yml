@@ -1,4 +1,4 @@
-name: "Docker Deploy WordPress to EC2"
+name: "Docker Build and Push"
 
 on:
   push:
